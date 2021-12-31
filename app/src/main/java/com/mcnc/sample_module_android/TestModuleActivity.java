@@ -9,6 +9,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.mcnc.qr_code_scanner.Scanner;
+import com.mcnc.qr_code_scanner.interfaces.ScannerListener;
 
 public class TestModuleActivity extends AppCompatActivity {
     int LAUNCH_SECOND_ACTIVITY = 1;
@@ -30,7 +32,7 @@ public class TestModuleActivity extends AppCompatActivity {
                 try {
                     intent = new Intent(TestModuleActivity.this,
                             Class.forName("com.mcnc.qr_code_scanner.MainActivity"));
-                    intent.putExtra("APP_BAR_TITLE", "PPCBank Scanner");
+                    intent.putExtra("APP_BAR_TITLE", "PPCBank QRCode Scanner");
                     intent.putExtra("APP_BAR_BACKGROUND_COLOR", "#004c97");
                     intent.putExtra("SCANNER_TITLE", "ស្កេន QR");
                     intent.putExtra("SCANNER_DESCRIPTION", "Align frame with QR code");
@@ -40,23 +42,36 @@ public class TestModuleActivity extends AppCompatActivity {
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
+//                Scanner scanner = new Scanner();
+//                scanner.scan(new ScannerListener() {
+//                    @Override
+//                    public void onCompleted(String result) {
+//                        Toast.makeText(TestModuleActivity.this, "QRCode is", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(TestModuleActivity.this, result, Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                    @Override
+//                    public void onFailed() {
+//
+//                    }
+//                });
             }
         });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        System.out.println(requestCode);
-        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
-            if(resultCode == Activity.RESULT_OK){
-                String result = data.getStringExtra("RESULT");
-                System.out.println(result);
-                Toast.makeText(TestModuleActivity.this, result, Toast.LENGTH_SHORT).show();
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                // Write your code if there's no result
-            }
-        }
-    }
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        System.out.println(requestCode);
+//        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
+//            if(resultCode == Activity.RESULT_OK){
+//                String result = data.getStringExtra("RESULT");
+//                System.out.println(result);
+//                Toast.makeText(TestModuleActivity.this, result, Toast.LENGTH_SHORT).show();
+//            }
+//            if (resultCode == Activity.RESULT_CANCELED) {
+//                // Write your code if there's no result
+//            }
+//        }
+//    }
 }

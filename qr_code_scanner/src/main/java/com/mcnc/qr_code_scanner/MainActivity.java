@@ -2,6 +2,7 @@ package com.mcnc.qr_code_scanner;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.Guideline;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -12,7 +13,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,16 +32,33 @@ public class MainActivity extends AppCompatActivity {
     private TextView scanner_title, scanner_description;
     private int scannerColorMask;
     private String dataScannerColorMask;
+    //Guide
+    private Guideline topGuide, bottomGuide;
+    //Flash
+    private ImageView flashImage;
+    private TextView flashTitle;
+    private boolean isShowFlashLight = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getSupportActionBar().hide();
+
         getSupportActionBar().setElevation(0);
         setContentView(R.layout.activity_main);
 
         scanner_title = findViewById(R.id.scanner_title);
         scanner_description = findViewById(R.id.scanner_description);
         scannerView = findViewById(R.id.scanner_view);
+        //Guide
+        topGuide = findViewById(R.id.top_guide);
+        bottomGuide = findViewById(R.id.bottom_guide);
+        //Flash
+        flashImage = findViewById(R.id.icon_flash);
+        flashTitle = findViewById(R.id.title_flash);
 
         Intent intent = getIntent();
         String appBarTitle = intent.getStringExtra("APP_BAR_TITLE");
@@ -49,9 +69,13 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle(appBarTitle);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(appBarBackgroundColor)));
+//        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#CD020202")));
         scanner_title.setText(scannerTitle);
         scanner_description.setText(scannerDescription);
         scannerView.setMaskColor(Color.parseColor(dataScannerColorMask));
+
+        //Guide
+        setAspectRatio();
 
 
         // the code below appears in onCreate() method
@@ -61,12 +85,44 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startScanning();
         }
+
+        setFlashEvent();
+    }
+
+    private void setFlashEvent() {
+        flashImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Check Flash Is Available On Device
+                if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
+                    mCodeScanner.setFlashEnabled(!isShowFlashLight);
+                    flashImage.setImageResource(isShowFlashLight ? R.drawable.flash_on : R.drawable.flash_off);
+                    flashTitle.setText(isShowFlashLight ? "Turn on the flashlight" : "Turn off the flashlight");
+                    isShowFlashLight = !isShowFlashLight;
+                } else {
+                    Toast.makeText(MainActivity.this, "Your device does not have flash", Toast.LENGTH_SHORT).show();
+                }
+                System.out.println();
+            }
+        });
+    }
+
+    private void setAspectRatio() {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        float ratio = ((float)metrics.heightPixels / (float)metrics.widthPixels);
+        float topR = 0.15f;//0.15f because 0.5 - 0.7 / 2 (size of qrcode)
+        float topRatio = (float) ((topR * (float)metrics.heightPixels) / (float)metrics.widthPixels);
+        float endRatio = (float) ((0.65 * (float)metrics.heightPixels) / (float)metrics.widthPixels);
+        endRatio = (float) (1 - topRatio);//move reverse of middle screen
+        topGuide.setGuidelinePercent(topRatio);
+        bottomGuide.setGuidelinePercent(endRatio);
     }
 
     private void startScanning() {
         mCodeScanner = new CodeScanner(this, scannerView);
         //config option
 //        scannerView.setElevation(4);
+        mCodeScanner.setFlashEnabled(false);
 
         mCodeScanner.setDecodeCallback(new DecodeCallback() {
             @Override

@@ -10,5 +10,6 @@
     <color name="green">#26DD2D</color>
 
     <!-- Custom -->
-    <color name="mask">#CD004C97</color>
+<!--    <color name="mask">#CD004C97</color>-->
+    <color name="mask">#CD020202</color>
 </resources>

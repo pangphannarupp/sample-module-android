@@ -4,6 +4,7 @@
     package="com.mcnc.qr_code_scanner">
 
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.FLASHLIGHT"/>
 
     <application
         tools:replace="android:theme"
